@@ -5,7 +5,7 @@ from botocore.exceptions import ClientError
 import datetime as dt
 
 
-class CredCollector:
+class AWSAccess:
     def __init__(self):
         load_dotenv()
         self.access_key = os.environ.get('ACCESS_KEY')
@@ -13,7 +13,7 @@ class CredCollector:
         self.secret_name = os.environ.get('SECRET_NAME')
         self.region_name = os.environ.get('SECRET_REGION')
 
-    def get_credentials(self):
+    def get_sepolia_credentials(self):
         session = boto3.session.Session()
         client = session.client(
             service_name = 'secretsmanager',
@@ -31,26 +31,4 @@ class CredCollector:
 
         secret = get_secret_value_response['SecretString']
 
-        return secret
-    
-    # @staticmethod
-    # def csv_filename(name):
-    #     today = dt.datetime.now().strftime('%Y-%m-%d')
-    #     return f'/CSV_Files/{name}_{today}.csv'
-
-    # @staticmethod
-    # def save_data(data, filename):
-    #     data.to_csv(filename, index=False)
-
-
-# Fetch data
-if __name__ == '__main__':
-    collector = CredCollector()
-    start_time = dt.datetime.now()
-
-    print(collector.get_credentials())
-    print(type(collector.get_credentials()))
-
-    # end_time = dt.datetime.now()
-    # print(f'Runtime: {end_time - start_time}')
-    # print('Data Collection Complete')
+        return json.loads(secret)
