@@ -2,10 +2,10 @@ import os
 from dotenv import load_dotenv
 import boto3
 from botocore.exceptions import ClientError
-import datetime as dt
+import json
 
 
-class AWSAccess:
+class AWSAPIHandler:
     def __init__(self):
         load_dotenv()
         self.access_key = os.environ.get('ACCESS_KEY')
