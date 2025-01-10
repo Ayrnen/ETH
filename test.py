@@ -8,8 +8,8 @@ import datetime as dt
 
 class Sepolia:
     def __init__(self):
-        self.aws_api = AWS_API()
-        self.etherscan = EtherscanAPI()
+        self.aws_api = AWSAPIHandler()
+        self.etherscan = EtherscanAPIHandler()
         self.credentials = self.aws_api.get_sepolia_credentials()
         self.provider_url = self.credentials['sepolia-endpoint']
         self.wallet_key = self.credentials['private-key']
@@ -29,7 +29,7 @@ class Sepolia:
         return self.web3.from_wei(balance, 'ether')
 
 
-    def interact_with_factory(self):
+    def interact_with_pool(self):
         v3_factory_address = '0x0227628f3F023bb0B980b67D528571c95c6DaC1c'
         v3_factory_abi = self.etherscan.get_contract_abi(v3_factory_address)
         print('ABI Fetched!')
@@ -44,6 +44,11 @@ class Sepolia:
         pool_address = contract.functions.getPool(eth_sep, usdc_sep, fee).call()
         print(f"Pool Address: {pool_address}")
 
+        pool_abi = self.etherscan.get_contract_abi(pool_address)
+        pool_contract = web3.eth.contract(address=Web3.to_checksum_address(pool_address), abi=pool_abi)
+
+        slot0 = pool_contract.functions.slot0().call()
+        print(f"Slot0 Data (Price Info): {slot0}")
 
 
 
@@ -55,6 +60,6 @@ if __name__ == '__main__':
     print(f'Wallet Address: {sepolia.get_wallet_address()}')
     print(f'Wallet Balance: {sepolia.get_wallet_balance()} ETH')
 
-    sepolia.interact_with_factory()
+    sepolia.interact_with_pool()
 
     RuntimeTracker.stop()
