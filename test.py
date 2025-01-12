@@ -38,17 +38,26 @@ class Sepolia:
         print('Contract Created!')
 
         eth_sep = '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9'
-        usdc_sep = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'
+        usdc_sep = '0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8'
         fee = 3000
 
         pool_address = contract.functions.getPool(eth_sep, usdc_sep, fee).call()
         print(f"Pool Address: {pool_address}")
 
         pool_abi = self.etherscan.get_contract_abi(pool_address)
-        pool_contract = web3.eth.contract(address=Web3.to_checksum_address(pool_address), abi=pool_abi)
+        pool_contract = self.web3.eth.contract(address=Web3.to_checksum_address(pool_address), abi=pool_abi)
 
         slot0 = pool_contract.functions.slot0().call()
-        print(f"Slot0 Data (Price Info): {slot0}")
+        unformatted_price = slot0[0]
+        price = (unformatted_price / (2 ** 96)) ** 2
+        curr_tick = slot0[1]  
+        obs_idx = slot0[2] 
+        obs_cardinality = slot0[3]
+        obs_cardinality_next = slot0[4]
+        fee_protocol = slot0[5]
+        lock_status = slot0[6] 
+
+        print(price)
 
 
 
