@@ -13,6 +13,7 @@ class ConfigReader:
             raise ValueError(f'Error reading config file: {self.config_file}. {e}')
 
     def get_section(self, section):
-        if section not in self.config:
-            raise KeyError(f"Section '{section}' not found in config file: {self.config_file}")
         return {key: value for key, value in self.config[section].items()}
+
+    def get_section_keys(self, section):
+        return list(self.config[section].keys())
