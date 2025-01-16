@@ -1,6 +1,8 @@
 from classes.aws_api import AWSAPIHandler
 from classes.etherscan_api import EtherscanAPIHandler
 from classes.runtime_tracker import RuntimeTracker
+from classes.config_reader import ConfigReader
+
 from web3 import Web3
 import datetime as dt
 
@@ -14,11 +16,17 @@ class Sepolia:
         self.provider_url = self.credentials['sepolia-endpoint']
         self.wallet_key = self.credentials['private-key']
         self.web3 = Web3(Web3.HTTPProvider(self.provider_url))
-
+        self.token_addresses = self._get_token_addresses()
+        
         if self.web3.is_connected():
             print("Connected to Sepolia Testnet!")
         else:
             print("Failed to connect")
+
+    def _get_token_addresses(self):
+        config = ConfigReader()
+        return config.get_section('token-addresses')
+
 
     def get_wallet_address(self):
         return self.web3.eth.account.from_key(self.wallet_key).address
@@ -37,8 +45,8 @@ class Sepolia:
         contract = self.web3.eth.contract(address=Web3.to_checksum_address(v3_factory_address), abi=v3_factory_abi)
         print('Contract Created!')
 
-        eth_sep = '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9'
-        usdc_sep = '0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8'
+        eth_sep = self.token_addresses['eth']
+        usdc_sep = self.token_addresses['usdc']
         fee = 3000
 
         pool_address = contract.functions.getPool(eth_sep, usdc_sep, fee).call()
@@ -50,12 +58,19 @@ class Sepolia:
         slot0 = pool_contract.functions.slot0().call()
         unformatted_price = slot0[0]
         price = (unformatted_price / (2 ** 96)) ** 2
-        curr_tick = slot0[1]  
-        obs_idx = slot0[2] 
+        print(price)
+        tick_index = slot0[1]
+        print(tick_index)
+        obs_idx = slot0[2]
+        print(obs_idx)
         obs_cardinality = slot0[3]
+        print(obs_cardinality)
         obs_cardinality_next = slot0[4]
+        print(obs_cardinality_next)
         fee_protocol = slot0[5]
-        lock_status = slot0[6] 
+        print(fee_protocol)
+        lock_status = slot0[6]
+        print(lock_status)
 
         print(price)
 
