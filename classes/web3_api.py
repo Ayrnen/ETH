@@ -45,6 +45,11 @@ class Web3APIHandler:
             fee_tier
         ).call()
         return pool_address
+
+    def get_pool_contract(self, pool_address):
+        pool_abi = self.etherscan.get_contract_abi(pool_address)
+        pool_contract = self.web3.eth.contract(address=Web3.to_checksum_address(pool_address), abi=pool_abi)
+        return pool_contract
     
     def get_pool_tokens(self, pool_address):
         pool_abi = self.etherscan.get_contract_abi(pool_address)
@@ -58,11 +63,6 @@ class Web3APIHandler:
         token1_address = self.token_addresses[token1]
         pool_address = factory_contract.functions.createPool(token0_address, token1_address, fee, tick_lower, tick_upper).call()
         return pool_address
-
-    def get_pool_contract(self, pool_address):
-        pool_abi = self.etherscan.get_contract_abi(pool_address)
-        pool_contract = self.web3.eth.contract(address=Web3.to_checksum_address(pool_address), abi=pool_abi)
-        return pool_contract
 
     def get_pool_slot0(self, pool_contract):
         slot0 = pool_contract.functions.slot0().call()
@@ -85,3 +85,28 @@ class Web3APIHandler:
             'fee_protocol': fee_protocol,
             'unlocked': unlocked,
         }
+    
+    def get_pool_ticks(self, pool_contract):
+        # Fetch slot0 data to get the current tick
+        slot0_data = pool_contract.functions.slot0().call()
+        current_tick = slot0_data[1]  # Index 1 corresponds to the current tick
+
+        # Fetch tick spacing from the pool contract
+        tick_spacing = pool_contract.functions.tickSpacing().call()
+
+        # Calculate tick range boundaries based on tick spacing
+        lower_tick = (current_tick // tick_spacing) * tick_spacing
+        upper_tick = lower_tick + tick_spacing
+
+        return {
+            'current_tick': current_tick,
+            'tick_spacing': tick_spacing,
+            'lower_tick': lower_tick,
+            'upper_tick': upper_tick,
+        }
+    
+    def get_pool_liquidity(self, pool_contract):
+        liquidity = pool_contract.functions.liquidity().call()
+        return liquidity
+
+    
