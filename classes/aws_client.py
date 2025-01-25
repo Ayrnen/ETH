@@ -5,7 +5,7 @@ from botocore.exceptions import ClientError
 import json
 
 
-class AWSAPIHandler:
+class AWSClient:
     def __init__(self):
         load_dotenv()
         self.access_key = os.environ.get('ACCESS_KEY')

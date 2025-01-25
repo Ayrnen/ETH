@@ -1,23 +1,25 @@
-from classes.web3_api import Web3APIHandler
+from classes.web3_client import Web3Client
+from classes.uniswap_client import UniswapClient
 from classes.runtime_tracker import RuntimeTracker
 from classes.config_reader import ConfigReader
 
 
 class PoolValidator:
     def __init__(self):
-        self.web3_api = Web3APIHandler()
+        self.web3_client = Web3Client()
+        self.uniswap_client = UniswapClient()
         self.config = ConfigReader()
         self.factory_contract = self._get_factory_contract()
 
     def _get_factory_contract(self):
         factory_address = self.config.get_section('uniswap-factories')['v3']
-        factory_contract = self.web3_api.get_factory_contract(factory_address)
+        factory_contract = self.uniswap_client.get_factory_contract(factory_address)
         return factory_contract
     
     def get_pool_address(self, token0, token1, fee_tier):
-        token0_address = self.web3_api.token_addresses[token0]
-        token1_address = self.web3_api.token_addresses[token1]
-        pool_address = self.web3_api.get_pool_address(self.factory_contract, token0_address, token1_address, fee_tier)
+        token0_address = self.web3_client.token_addresses[token0]
+        token1_address = self.web3_client.token_addresses[token1]
+        pool_address = self.uniswap_client.get_pool_address(self.factory_contract, token0_address, token1_address, fee_tier)
         return pool_address
 
     def validate_pool_existence(self, token0, token1, fee_tier):
@@ -38,11 +40,11 @@ if __name__ == '__main__':
 
     print('Validate USDC/WETH pool metadata:')
     pool_address = pool_validator.get_pool_address('usdt', 'weth', 3000)
-    pool_contract = pool_validator.web3_api.get_pool_contract(pool_address)
+    pool_contract = pool_validator.uniswap_client.get_pool_contract(pool_address)
     print('Pool Address:', pool_address)
-    print('Slot 0:', pool_validator.web3_api.get_pool_slot0(pool_contract))
-    print('Liquidity:', pool_validator.web3_api.get_pool_liquidity(pool_contract))
-    print('Ticks:', pool_validator.web3_api.get_pool_ticks(pool_contract))
+    print('Slot 0:', pool_validator.uniswap_client.get_pool_slot0(pool_contract))
+    print('Liquidity:', pool_validator.uniswap_client.get_pool_liquidity(pool_contract))
+    print('Ticks:', pool_validator.uniswap_client.get_pool_ticks(pool_contract))
     
 
 
