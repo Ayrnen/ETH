@@ -25,3 +25,19 @@ class Web3Client:
     def get_wallet_balance(self, wallet_address):
         balance = self.web3.eth.get_balance(wallet_address)
         return self.web3.from_wei(balance, 'ether')
+
+    def subscribe_new_blocks(self, process_block: Callable[[dict], None]):
+
+        subscription = self.web3.eth.subscribe("newHeads")
+
+        try:
+            for new_block in subscription:
+                # Convert block number from hex to int
+                new_block["number"] = int(new_block["number"], 16)
+
+                # Call the callback function with the block details
+                process_block(new_block)
+
+        except Exception as e:
+            print(f"Error in block subscription: {e}")
+            # Handle reconnection logic if needed
