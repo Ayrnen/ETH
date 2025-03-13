@@ -26,6 +26,6 @@ class EtherscanClient:
             if data['status'] == '1':
                 return json.loads(data['result'])
             else:
-                raise Exception(f'Error fetching ABI: {data['message']}')
+                raise Exception(f'Error fetching ABI: {data["message"]}')
         else:
             raise Exception(f'HTTP Error: {response.status_code}')
