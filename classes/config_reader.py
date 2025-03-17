@@ -17,3 +17,6 @@ class ConfigReader:
 
     def get_section_keys(self, section):
         return list(self.config[section].keys())
+    
+    def get_specific_value(self, section, key):
+        return self.config[section][key]
