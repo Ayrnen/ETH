@@ -12,7 +12,9 @@ class EtherscanClient:
 
         if network == 'Mainnet': self.api_url = 'https://api.etherscan.io/api'
         elif network == 'Sepolia': self.api_url = 'https://api-sepolia.etherscan.io/api'
-        
+    
+    def get_token_abi(self, token_address):
+        pass
 
     def get_contract_abi(self, contract_address):
         params = {
