@@ -4,12 +4,15 @@ import os
 from dotenv import load_dotenv
 
 class EtherscanClient:
-    def __init__(self):
+    def __init__(self, network):
         env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
         load_dotenv(env_path)
 
-        self.api_url = 'https://api-sepolia.etherscan.io/api'
         self.api_key = os.getenv('ETHERSCAN_API_KEY')
+
+        if network == 'Mainnet': self.api_url = 'https://api.etherscan.io/api'
+        elif network == 'Sepolia': self.api_url = 'https://api-sepolia.etherscan.io/api'
+        
 
     def get_contract_abi(self, contract_address):
         params = {
