@@ -1,4 +1,5 @@
 import configparser
+from web3 import Web3
 
 class ConfigReader:
     def __init__(self):
@@ -18,5 +19,9 @@ class ConfigReader:
     def get_section_keys(self, section):
         return list(self.config[section].keys())
     
-    def get_specific_value(self, section, key):
+    def get_value(self, section, key):
         return self.config[section][key]
+
+    def get_value_checksum(self, section, key):
+        token_address = self.config[section][key]
+        return Web3.to_checksum_address(token_address.lower())
