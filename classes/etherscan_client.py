@@ -12,8 +12,8 @@ class EtherscanClient:
 
         if network == 'Mainnet': self.api_url = 'https://api.etherscan.io/api'
         elif network == 'Sepolia': self.api_url = 'https://api-sepolia.etherscan.io/api'
-    
-    def get_token_abi(self, token_address):
+
+    def get_balance_token(self, token_code):
         pass
 
     def get_contract_abi(self, contract_address):
@@ -24,7 +24,6 @@ class EtherscanClient:
             'apikey': self.api_key
         }
 
-        # Make the API request
         response = requests.get(self.api_url, params=params)
         if response.status_code == 200:
             data = response.json()
@@ -34,3 +33,5 @@ class EtherscanClient:
                 raise Exception(f'Error fetching ABI: {data["message"]}')
         else:
             raise Exception(f'HTTP Error: {response.status_code}')
+        
+    

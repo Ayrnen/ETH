@@ -24,11 +24,19 @@ class ETHLAddressClient:
         return self.web3.from_wei(balance, 'ether')
 
     def get_balance_token(self, token_code):
-        token_address = self.config.get_specific_value('mainnet-token-addresses', token_code)
-        token_abi = self.etherscan.get_token_abi(token_address)
-        token_contract = self.web3.eth.contract(address=token_address, abi=token_abi)
-        balance = token_contract.functions.balanceOf(self.address).call()
-        return balance
+        
+    # def get_balance_token(self, token_code):
+    #     token_address = self.config.get_value_checksum('mainnet-token-addresses', token_code)
+    #     token_abi = self.etherscan.get_contract_abi(token_address)
+    #     token_contract = self.web3.eth.contract(address=token_address, abi=token_abi)
+
+    #     # print(token_contract.all_functions())
+
+    #     implementation_address = token_contract.functions.implementation().call()
+    #     implementation_abi = self.etherscan.get_contract_abi(implementation_address)
+    #     implementation_contract = self.web3.eth.contract(address=implementation_address, abi=implementation_abi)
+    #     balance = implementation_contract.balance_of(self.address).call()
+    #     return balance
 
     def get_transaction_count(self):
         transactions = self.web3.eth.get_transaction_count(self.address)

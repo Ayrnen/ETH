@@ -11,10 +11,12 @@ class Placeholder:
 
 if __name__ == '__main__':
     RuntimeTracker.start()
-    address_client = ETHLAddressClient('0xC333E80eF2deC2805F239E3f1e810612D294F771')
+    # address_client = ETHLAddressClient('0xC333E80eF2deC2805F239E3f1e810612D294F771')
+    address_client = ETHLAddressClient('0xcAF6f896E07c95582a438CFe76f52a11D45c1CE7')
 
-    print(address_client.get_balance())
-    print(address_client.get_transactions())
+    print(address_client.get_balance_eth())
+    print(address_client.get_transaction_count())
+    print(address_client.get_balance_token('USDC'))
     
 
     RuntimeTracker.stop()
