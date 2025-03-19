@@ -13,25 +13,63 @@ class EtherscanClient:
         if network == 'Mainnet': self.api_url = 'https://api.etherscan.io/api'
         elif network == 'Sepolia': self.api_url = 'https://api-sepolia.etherscan.io/api'
 
-    def get_balance_token(self, token_code):
-        pass
+    def get_balance_token(self, wallet_address, token_address):
+        params = {
+            'module': 'account',
+            'action': 'tokenbalance',
+            'contractaddress': token_address,
+            'address': wallet_address,
+            'tag': 'latest',
+            'apikey': self.api_key
+        }
+        
+        response = requests.get(self.api_url, params=params).json()
+        response.raise_for_status()
+        
+        if data['status'] != '1':
+        raise Exception(f"Error: {data.get('message', 'Unknown')}")
+
+    raw_balance = int(data['result'])
+    decimals = self.get_token_decimals(token_address)
+    return raw_balance / (10 ** decimals)
+
+
+        data = response.json()
+        if data['status'] == '1':
+            return int(data['result'])
+        else:
+            raise Exception(f'Token Balance API Error: {data.get("message", "Unknown")}')
+
+    def get_token_decimals(self, token_address):
+        params = {
+            'module': 'proxy',
+            'action': 'eth_call',
+            'to': token_address,
+            'data': '0x313ce567',
+            'apikey': self.api_key,
+            'tag': 'latest',
+        }
+        
+        data = requests.get(self.api_url, params=params).json()
+        return int(data['result'], 16) if data['status'] == '1' else 18
+
+
+
 
     def get_contract_abi(self, contract_address):
         params = {
             'module': 'contract',
             'action': 'getabi',
             'address': contract_address,
-            'apikey': self.api_key
+            'apikey': self.api_key,
+            'tag': 'latest',
         }
 
         response = requests.get(self.api_url, params=params)
-        if response.status_code == 200:
-            data = response.json()
-            if data['status'] == '1':
-                return json.loads(data['result'])
-            else:
-                raise Exception(f'Error fetching ABI: {data["message"]}')
-        else:
-            raise Exception(f'HTTP Error: {response.status_code}')
+        response.raise_for_status()
         
-    
+        data = response.json()
+        if data['status'] == '1':
+            return json.loads(data['result'])
+        else:
+            raise Exception(f'Contract ABI API Error: {data.get("message", "Unknown")}')
