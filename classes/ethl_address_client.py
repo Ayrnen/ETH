@@ -24,7 +24,8 @@ class ETHLAddressClient:
         return self.web3.from_wei(balance, 'ether')
 
     def get_balance_token(self, token_code):
-        
+        token_address = self.config.get_value('mainnet-token-addresses', token_code)
+        return self.etherscan.get_balance_token(self.address, token_address)
     # def get_balance_token(self, token_code):
     #     token_address = self.config.get_value_checksum('mainnet-token-addresses', token_code)
     #     token_abi = self.etherscan.get_contract_abi(token_address)
