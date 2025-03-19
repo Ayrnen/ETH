@@ -22,21 +22,15 @@ class EtherscanClient:
             'tag': 'latest',
             'apikey': self.api_key
         }
-        
-        response = requests.get(self.api_url, params=params).json()
+
+        response = requests.get(self.api_url, params=params)
         response.raise_for_status()
         
-        if data['status'] != '1':
-        raise Exception(f"Error: {data.get('message', 'Unknown')}")
-
-    raw_balance = int(data['result'])
-    decimals = self.get_token_decimals(token_address)
-    return raw_balance / (10 ** decimals)
-
-
         data = response.json()
         if data['status'] == '1':
-            return int(data['result'])
+            raw_balance = int(data['result'])
+            decimals = self.get_token_decimals(token_address)
+            return raw_balance / (10 ** decimals)
         else:
             raise Exception(f'Token Balance API Error: {data.get("message", "Unknown")}')
 
@@ -49,9 +43,10 @@ class EtherscanClient:
             'apikey': self.api_key,
             'tag': 'latest',
         }
-        
-        data = requests.get(self.api_url, params=params).json()
-        return int(data['result'], 16) if data['status'] == '1' else 18
+        response = requests.get(self.api_url, params=params)
+        response.raise_for_status()
+        data = response.json()
+        return int(data['result'], 16) if data['result'] else 18
 
 
 
