@@ -6,12 +6,14 @@ import json
 import requests
 from web3 import Web3
 from websockets import connect
+import os
 
 
 class ETHLClient:
     def __init__(self):
-        self.ws_url = 'wss://mainnet.infura.io/ws/v3/990dd01e4e974b4ea477b0dbeeacb288'
-        self.http_url = 'https://mainnet.infura.io/v3/990dd01e4e974b4ea477b0dbeeacb288'
+        self.api_key = os.getenv('INFURA_API_KEY')
+        self.ws_url = 'wss://mainnet.infura.io/ws/v3/' + self.api_key
+        self.http_url = 'https://mainnet.infura.io/v3/' + self.api_key
         self.web3 = Web3(Web3.HTTPProvider(self.http_url))
 
 
