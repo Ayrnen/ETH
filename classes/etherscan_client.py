@@ -10,8 +10,8 @@ class EtherscanClient:
 
         self.api_key = os.getenv('ETHERSCAN_API_KEY')
 
-        if network == 'Mainnet': self.api_url = 'https://api.etherscan.io/api'
-        elif network == 'Sepolia': self.api_url = 'https://api-sepolia.etherscan.io/api'
+        if network == 'Mainnet': self.url = 'https://api.etherscan.io/api'
+        elif network == 'Sepolia': self.url = 'https://api-sepolia.etherscan.io/api'
 
     def get_balance_token(self, wallet_address, token_address):
         params = {
@@ -23,7 +23,7 @@ class EtherscanClient:
             'apikey': self.api_key
         }
 
-        response = requests.get(self.api_url, params=params)
+        response = requests.get(self.url, params=params)
         response.raise_for_status()
         
         data = response.json()
@@ -43,7 +43,7 @@ class EtherscanClient:
             'apikey': self.api_key,
             'tag': 'latest',
         }
-        response = requests.get(self.api_url, params=params)
+        response = requests.get(self.url, params=params)
         response.raise_for_status()
         data = response.json()
         return int(data['result'], 16) if data['result'] else 18
@@ -56,15 +56,43 @@ class EtherscanClient:
             'module': 'contract',
             'action': 'getabi',
             'address': contract_address,
-            'apikey': self.api_key,
-            'tag': 'latest',
+            'apikey': self.api_key
         }
 
-        response = requests.get(self.api_url, params=params)
-        response.raise_for_status()
+        try:
+            response = requests.get(self.url, params=params, timeout=10)  # Add timeout
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            raise ConnectionError(f"Request failed: {e}") from e
         
         data = response.json()
         if data['status'] == '1':
-            return json.loads(data['result'])
+            try:
+                return json.loads(data['result'])
+            except json.JSONDecodeError:
+                # This should never happen for verified contracts, but handle it anyway
+                raise ValueError("ABI data corrupted") from None
         else:
-            raise Exception(f'Contract ABI API Error: {data.get("message", "Unknown")}')
+            # Extract the specific error reason from 'result'
+            error_message = data.get('result', 'Unknown error')
+            if "not verified" in error_message:
+                raise ValueError(f"Contract {contract_address} is not verified on Etherscan") from None
+            else:
+                raise Exception(f"Etherscan API Error: {error_message}")
+        
+    def get_implementation_address(self, proxy_address):
+        params = {
+            'module': 'contract',
+            'action': 'getsourcecode',
+            'address': proxy_address,
+            'apikey': self.api_key
+        }
+        
+
+        response = requests.get(self.url, params=params, timeout=10)
+        data = response.json()
+        print('Data:', data)
+        if data['status'] == '1':
+            implementation = data['result'][0].get('ImplementationAddress')
+            if implementation:
+                return implementation
