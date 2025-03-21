@@ -15,7 +15,8 @@ if __name__ == '__main__':
 
     print(address_client.get_balance_eth())
     print(address_client.get_transaction_count())
-    print(address_client.get_balance_token('USDT'))
+    # print(address_client.get_balance_token('USDT'))
+    print(address_client.get_lp_position('USDC_WETH'))
     
 
     RuntimeTracker.stop()
