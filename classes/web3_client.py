@@ -29,12 +29,8 @@ class Web3Client:
         return self.web3.eth.get_transaction_count(address)
 
     def get_position_key(self, address, tick_lower=-887272, tick_upper=887272):
-        print(f'Address: {address}')
         encoded_data = encode_packed(
             ['address', 'int24', 'int24'],
             [Web3.to_checksum_address(address), tick_lower, tick_upper]
         )
-        print(f'Encoded data: {encoded_data}')
-        keccak = Web3.keccak(encoded_data)
-        print(f'Keccak: {keccak}')
-        return keccak
+        return Web3.keccak(encoded_data)
