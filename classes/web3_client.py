@@ -1,6 +1,5 @@
-from classes.config_reader import ConfigReader
-
 from web3 import Web3
+from eth_abi.packed import encode_packed
 from dotenv import load_dotenv
 import os
 
@@ -16,34 +15,26 @@ class Web3Client:
         if not self.web3.is_connected():
             raise ConnectionError('Failed to connect to Web3 provider')
 
-    def _get_token_addresses(self):
-        config = ConfigReader()
-        return config.get_section('token-addresses')
+    def get_address_from_secret(self, secret):
+        return self.web3.eth.account.from_key(secret).address
 
-    # Wallet API calls
-    def get_wallet_address(self):
-        return self.web3.eth.account.from_key(self.wallet_key).address
+    def get_address_from_ens(self, ens_name):
+        return self.web3.ens.address(ens_name)
 
-    def get_wallet_balance(self, wallet_address):
-        balance = self.web3.eth.get_balance(wallet_address)
+    def get_balance_eth(self, address):
+        balance = self.web3.eth.get_balance(address)
         return self.web3.from_wei(balance, 'ether')
+    
+    def get_transaction_count(self, address):
+        return self.web3.eth.get_transaction_count(address)
 
-    # def subscribe_new_blocks(self, process_block: Callable[[dict], None]):
-
-    #     subscription = self.web3.eth.subscribe("newHeads")
-
-    #     try:
-    #         for new_block in subscription:
-    #             # Convert block number from hex to int
-    #             new_block["number"] = int(new_block["number"], 16)
-
-    #             # Call the callback function with the block details
-    #             process_block(new_block)
-
-    #     except Exception as e:
-    #         print(f"Error in block subscription: {e}")
-    #         # Handle reconnection logic if needed
-
-    def get_implementation_address(self, proxy_address):
-        implementation_address = self.web3.eth.contract(address=proxy_address).functions.implementation().call()
-        return implementation_address
+    def get_position_key(self, address, tick_lower=-887272, tick_upper=887272):
+        print(f'Address: {address}')
+        encoded_data = encode_packed(
+            ['address', 'int24', 'int24'],
+            [Web3.to_checksum_address(address), tick_lower, tick_upper]
+        )
+        print(f'Encoded data: {encoded_data}')
+        keccak = Web3.keccak(encoded_data)
+        print(f'Keccak: {keccak}')
+        return keccak
