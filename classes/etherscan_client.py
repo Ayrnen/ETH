@@ -19,7 +19,6 @@ class EtherscanClient:
             'action': 'tokenbalance',
             'contractaddress': token_address,
             'address': wallet_address,
-            'tag': 'latest',
             'apikey': self.api_key
         }
 
