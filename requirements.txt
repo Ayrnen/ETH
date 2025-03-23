@@ -2,3 +2,4 @@ boto3
 web3
 python-dotenv
 eth_utils
+eth-abi
