@@ -4,6 +4,8 @@ from classes.config_reader import ConfigReader
 from classes.ethl_address_client import ETHLAddressClient
 from classes.abi_reader import ABIReader
 
+from dotenv import load_dotenv
+import os
 
 class Placeholder:
     def __init__(self):
@@ -14,11 +16,12 @@ class Placeholder:
 if __name__ == '__main__':
     RuntimeTracker.start()
 
-    # w3 = RPCClient()
-    # address = w3.get_address_from_ens('vitalik.eth')
 
+    load_dotenv()
+    rpc = RPCClient()
+    ens_name = os.getenv('ENS_NAME')
+    address = rpc.get_address_from_ens(ens_name)
 
-    address = '0x290ca4DA2c963deA5AE736469a5B8a53d64d4E6A'
     config = ConfigReader()
     lp_address = config.get_value_checksum('mainnet-uniswap-pools', 'USDT_WETH')
 
