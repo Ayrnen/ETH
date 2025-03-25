@@ -1,4 +1,4 @@
-from classes.web3_client import Web3Client
+from classes.rpc_client import RPCClient
 from classes.runtime_tracker import RuntimeTracker
 from classes.config_reader import ConfigReader
 from classes.ethl_address_client import ETHLAddressClient
@@ -14,7 +14,7 @@ class Placeholder:
 if __name__ == '__main__':
     RuntimeTracker.start()
 
-    # w3 = Web3Client()
+    # w3 = RPCClient()
     # address = w3.get_address_from_ens('vitalik.eth')
 
 

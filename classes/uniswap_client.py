@@ -2,7 +2,7 @@ from classes.aws_client import AWSClient
 from classes.etherscan_client import EtherscanClient
 from classes.runtime_tracker import RuntimeTracker
 from classes.config_reader import ConfigReader
-from classes.web3_client import Web3Client
+from classes.rpc_client import RPCClient
 
 from web3 import Web3
 
@@ -12,7 +12,7 @@ class UniswapClient:
     def __init__(self):
         self.aws_client = AWSClient()
         self.etherscan_client = EtherscanClient()
-        self.web3_client = Web3Client()
+        self.web3_client = RPCClient()
         self.credentials = self.aws_client.get_sepolia_credentials()
         self.provider_url = self.credentials['sepolia-endpoint']
         self.wallet_key = self.credentials['private-key']

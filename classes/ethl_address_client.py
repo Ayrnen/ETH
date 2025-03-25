@@ -1,6 +1,6 @@
 from classes.config_reader import ConfigReader
 from classes.etherscan_client import EtherscanClient
-from classes.web3_client import Web3Client
+from classes.rpc_client import RPCClient
 
 import asyncio
 import json
@@ -10,7 +10,7 @@ class ETHLAddressClient:
     def __init__(self, address):
         self.config = ConfigReader()
         self.etherscan = EtherscanClient('Mainnet')
-        self.web3_client = Web3Client()
+        self.web3_client = RPCClient()
         self.address = address
         
     def get_balance_eth(self):
